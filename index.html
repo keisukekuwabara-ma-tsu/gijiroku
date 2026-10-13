@@ -59,9 +59,8 @@
 <main>
 
   <div class="card">
-    <h2>接続設定（初回のみ・この端末に保存）</h2>
+    <h2>接続設定（変更する場合のみ）</h2>
     <label>GAS ウェブアプリURL（/exec）</label><input type="text" id="cfgUrl" placeholder="https://script.google.com/macros/s/.../exec">
-    <label>合言葉</label><input type="password" id="cfgPass" autocomplete="off">
     <div class="btns" style="justify-content:flex-start"><button class="b gray" id="btnCfg">保存</button></div>
   </div>
 
@@ -144,14 +143,13 @@
   // ---------- 接続設定（localStorage） ----------
   const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbxSTE8b-RdP5LC6r5YctrsWjJfekUGsDK_vTPFJjFQG0LqAyt19GydMD1ac7O8fneb9/exec';
   function getCfg(){
-    try{ return { url: localStorage.getItem('minutes_url') || DEFAULT_URL, pass: localStorage.getItem('minutes_pass') || '' }; }
-    catch(e){ return { url: $('cfgUrl').value.trim() || DEFAULT_URL, pass: $('cfgPass').value }; }
+    try{ return { url: localStorage.getItem('minutes_url') || DEFAULT_URL }; }
+    catch(e){ return { url: $('cfgUrl').value.trim() || DEFAULT_URL }; }
   }
-  (function(){ const c = getCfg(); $('cfgUrl').value = c.url; $('cfgPass').value = c.pass; })();
+  (function(){ const c = getCfg(); $('cfgUrl').value = c.url; })();
   $('btnCfg').onclick = () => {
     try{
       localStorage.setItem('minutes_url', $('cfgUrl').value.trim());
-      localStorage.setItem('minutes_pass', $('cfgPass').value);
     }catch(e){}
     $('btnCfg').textContent = '保存しました'; setTimeout(() => $('btnCfg').textContent = '保存', 1500);
   };
@@ -307,12 +305,12 @@
       const meta = { title: $('mTitle').value.trim(), date: $('mDate').value,
                      attendees: $('mAtt').value.trim(), note: $('mNote').value.trim() };
       const cfg = getCfg();
-      if (!cfg.url || !cfg.pass){
-        showStatus('上の「接続設定」にGASのURLと合言葉を入力して保存してください。', true);
+      if (!cfg.url){
+        showStatus('上の「接続設定」にGASのURLを入力して保存してください。', true);
         $('btnGen').disabled = false; return;
       }
       // Content-Typeを指定しない(text/plain)ことでCORSプリフライトを避ける
-      fetch(cfg.url, { method: 'POST', body: JSON.stringify({ pass: cfg.pass, audio: b64, mime: mime, meta: meta }) })
+      fetch(cfg.url, { method: 'POST', body: JSON.stringify({ audio: b64, mime: mime, meta: meta }) })
         .then(r => r.json())
         .then(j => {
           if (j.error) throw new Error(j.error);
