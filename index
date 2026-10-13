@@ -142,9 +142,10 @@
   $('mDate').value = new Date().toISOString().slice(0,10);
 
   // ---------- 接続設定（localStorage） ----------
+  const DEFAULT_URL = 'https://script.google.com/macros/s/AKfycbxSTE8b-RdP5LC6r5YctrsWjJfekUGsDK_vTPFJjFQG0LqAyt19GydMD1ac7O8fneb9/exec';
   function getCfg(){
-    try{ return { url: localStorage.getItem('minutes_url') || '', pass: localStorage.getItem('minutes_pass') || '' }; }
-    catch(e){ return { url: $('cfgUrl').value.trim(), pass: $('cfgPass').value }; }
+    try{ return { url: localStorage.getItem('minutes_url') || DEFAULT_URL, pass: localStorage.getItem('minutes_pass') || '' }; }
+    catch(e){ return { url: $('cfgUrl').value.trim() || DEFAULT_URL, pass: $('cfgPass').value }; }
   }
   (function(){ const c = getCfg(); $('cfgUrl').value = c.url; $('cfgPass').value = c.pass; })();
   $('btnCfg').onclick = () => {
